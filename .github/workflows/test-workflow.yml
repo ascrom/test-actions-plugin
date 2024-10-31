@@ -9,7 +9,7 @@ on:
       connector_version:
         description: 'Version of the Kafka Connect S3 Sink Connector'
         required: true
-        default: ''  # Leave empty to use the latest version by default
+        default: '10.5.9'
 
 jobs:
   download-upload:
