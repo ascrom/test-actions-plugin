@@ -16,16 +16,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
       - name: Download Specific JAR
         run: |
           curl -o kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar \
           "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar"
 
-      - name: Upload Kafka Connect S3 Sink Connector
+      - name: Upload JAR to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: Upload Kafka Connect S3 Sink Connector
+          name: kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar
           path: kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar
