@@ -20,8 +20,9 @@ jobs:
         run: |
           wget -O kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/confluentinc-kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
           unzip kafka-connect-s3-sink.zip -d kafka-connect-s3-sink
-          - name: Upload Artifact to GitHub
-          uses: actions/upload-artifact@v4
-          with:
-            name: hello-world-jar
-            path: plugin/build/libs/hello-world-*.jar  # Uploads all JARs built in the plugin directory
+
+      - name: Upload Artifact to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafka-connect-s3-sink
+          path: kafka-connect-s3-sink  # Uploads the unzipped connector directory
