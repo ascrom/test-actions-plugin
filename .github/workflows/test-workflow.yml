@@ -19,19 +19,15 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '7.5'  # Specify the compatible Gradle version
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew  # Ensure executable permissions
+      - name: Install Gradle
+        run: sudo apt-get update && sudo apt-get install -y gradle  # Installs Gradle on the runner
 
       - name: Build JAR with Gradle
-        run: ./gradlew -p plugin clean build --info --stacktrace  # Adds debug information
+        working-directory: plugin
+        run: gradle clean build --info --stacktrace  # Runs the Gradle build directly without the wrapper
 
       - name: Upload Artifact to GitHub
         uses: actions/upload-artifact@v4
         with:
           name: hello-world-jar
-          path: plugin/build/libs/hello-world-*.jar
+          path: plugin/build/libs/hello-world-*.jar  # Uploads all JARs built in the plugin directory
