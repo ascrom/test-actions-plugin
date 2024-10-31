@@ -1,33 +1,27 @@
-name: Build and Store Custom Plugin Artifact
+name: Upload Kafka Connect S3 Sink Connector
 
 on:
-  push:
-    branches:
-      - test-workflow  # Runs only on pushes to 'test-workflow' branch
+  workflow_dispatch:
+    inputs:
+      connector_version:
+        description: 'Version of the Kafka Connect S3 Sink Connector'
+        required: true
+        default: '10.5.17'
 
 jobs:
-  build-and-store:
+  download-upload:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 17
-
-      - name: Install Gradle
-        run: sudo apt-get update && sudo apt-get install -y gradle  # Installs Gradle on the runner
-
-      - name: Build JAR with Gradle
-        working-directory: plugin
-        run: gradle clean build --info --stacktrace  # Runs the Gradle build directly without the wrapper
-
-      - name: Upload Artifact to GitHub
-        uses: actions/upload-artifact@v4
-        with:
-          name: hello-world-jar
-          path: plugin/build/libs/hello-world-*.jar  # Uploads all JARs built in the plugin directory
+      - name: Download S3 Sink Connector
+        run: |
+          wget -O kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/confluentinc-kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
+          unzip kafka-connect-s3-sink.zip -d kafka-connect-s3-sink
+          - name: Upload Artifact to GitHub
+          uses: actions/upload-artifact@v4
+          with:
+            name: hello-world-jar
+            path: plugin/build/libs/hello-world-*.jar  # Uploads all JARs built in the plugin directory
