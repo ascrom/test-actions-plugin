@@ -3,13 +3,13 @@ name: Upload Kafka Connect S3 Sink Connector
 on:
   push:
     branches:
-      - test-workflow  # Replace with your specific branch name
+      - test-workflow
   workflow_dispatch:
     inputs:
       connector_version:
         description: 'Version of the Kafka Connect S3 Sink Connector'
         required: true
-        default: '10.5.17'
+        default: ''  # Leave empty to use the latest version by default
 
 jobs:
   download-upload:
@@ -19,16 +19,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Fetch Latest Version if Not Specified
+        id: get-latest
+        run: |
+          if [ -z "${{ github.event.inputs.connector_version }}" ]; then
+            LATEST_VERSION=$(curl -s "https://packages.confluent.io/maven/io/confluent/kafka-connect-s3/maven-metadata.xml" | grep -oPm1 "(?<=<latest>)[^<]+")
+            echo "Latest version is $LATEST_VERSION"
+            echo "::set-output name=version::$LATEST_VERSION"
+          else
+            echo "::set-output name=version::${{ github.event.inputs.connector_version }}"
+          fi
+
       - name: Download S3 Sink Connector
         run: |
-          curl -o kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
-
-      - name: Extract Specific JAR
-        run: |
-          unzip -j kafka-connect-s3-sink.zip "confluentinc-kafka-connect-s3-${{ github.event.inputs.connector_version }}/lib/kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar" -d extracted
+          curl -o kafka-connect-s3-${{ steps.get-latest.outputs.version }}.jar \
+          "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ steps.get-latest.outputs.version }}/kafka-connect-s3-${{ steps.get-latest.outputs.version }}.jar"
 
       - name: Upload JAR to GitHub
         uses: actions/upload-artifact@v4
         with:
           name: kafka-connect-s3-sink-jar
-          path: extracted/kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar  # Uploads only the specific JAR file
+          path: kafka-connect-s3-${{ steps.get-latest.outputs.version }}.jar
