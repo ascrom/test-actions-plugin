@@ -3,7 +3,7 @@ name: Upload Kafka Connect S3 Sink Connector
 on:
   push:
     branches:
-      - test-workflow  # Replace with your specific branch name
+      - test-workflow
   workflow_dispatch:
     inputs:
       connector_version:
@@ -21,7 +21,7 @@ jobs:
 
       - name: Download S3 Sink Connector
         run: |
-          wget -O kafka-connect-s3-sink.zip wget -O kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/confluentinc-kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
+          curl -o kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
 
       - name: Extract Specific JAR
         run: |
