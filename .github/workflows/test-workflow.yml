@@ -2,6 +2,8 @@ name: Upload Kafka Connect S3 Sink Connector
 
 on:
   workflow_dispatch:
+    branches:
+      - test-workflow
     inputs:
       connector_version:
         description: 'Version of the Kafka Connect S3 Sink Connector'
@@ -19,10 +21,13 @@ jobs:
       - name: Download S3 Sink Connector
         run: |
           wget -O kafka-connect-s3-sink.zip "https://packages.confluent.io/maven/io/confluent/kafka/connect/kafka-connect-s3/${{ github.event.inputs.connector_version }}/confluentinc-kafka-connect-s3-${{ github.event.inputs.connector_version }}.zip"
-          unzip kafka-connect-s3-sink.zip -d kafka-connect-s3-sink
 
-      - name: Upload Artifact to GitHub
+      - name: Extract Specific JAR
+        run: |
+          unzip -j kafka-connect-s3-sink.zip "kafka-connect-s3-${{ github.event.inputs.connector_version }}/lib/kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar" -d extracted
+
+      - name: Upload JAR to GitHub
         uses: actions/upload-artifact@v4
         with:
-          name: kafka-connect-s3-sink
-          path: kafka-connect-s3-sink  # Uploads the unzipped connector directory
+          name: kafka-connect-s3-sink-jar
+          path: extracted/kafka-connect-s3-${{ github.event.inputs.connector_version }}.jar  # Uploads only the specific JAR file
