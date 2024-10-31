@@ -1,9 +1,10 @@
 name: Upload Kafka Connect S3 Sink Connector
 
 on:
-  workflow_dispatch:
+  push:
     branches:
-      - test-workflow
+      - test-workflow  # Replace with your specific branch name
+  workflow_dispatch:
     inputs:
       connector_version:
         description: 'Version of the Kafka Connect S3 Sink Connector'
