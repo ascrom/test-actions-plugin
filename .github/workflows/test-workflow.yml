@@ -16,14 +16,17 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-            distribution: 'temurin'
-            java-version: 17
+          distribution: 'temurin'
+          java-version: 17
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew  # Ensures gradlew has execute permissions
+
       - name: Build JAR with Gradle
-        run: ./gradlew -p plugin clean build
+        run: ./gradlew -p plugin clean build  # Uses the Gradle wrapper from the root and specifies the plugin directory
 
       - name: Upload Artifact to GitHub
         uses: actions/upload-artifact@v4
